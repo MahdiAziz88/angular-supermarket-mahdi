@@ -1,73 +1,26 @@
 <div class="main-container">
   <!-- Category Tabs -->
-  <div class="category-tabs">
-    <a 
-      [routerLink]="['/items']"
-      [queryParams]="{}"
-      routerLinkActive="active"
-      [routerLinkActiveOptions]="{ exact: true }">
-      All Items
-    </a>
-    <a 
-      *ngFor="let category of categories" 
-      [routerLink]="['/items']" 
-      [queryParams]="{ category: category.name }"
-      routerLinkActive="active">
-      {{ category.name }}
-    </a>
-  </div>
+  <app-category-tabs [categories]="categories"></app-category-tabs>
 
   <!-- Search Section -->
-  <div class="search-container">
-    <input 
-      [(ngModel)]="nameSearch" 
-      placeholder="Name..." 
-      type="text"
-      class="search-input"
-    />
-    <input 
-      [(ngModel)]="priceSearch" 
-      placeholder="Price ..." 
-      type="number"
-      class="search-input"
-    />
-    <button (click)="applyFilter({ name: nameSearch, price: priceSearch })" class="filter-button">Filter</button>
-    <button (click)="clearFilters()" class="clear-filters-button">Clear Filters</button>
-  </div>
+  <app-item-search
+    (filterCriteria)="applyFilter($event)"
+    (clearFiltersEvent)="clearFilters()"
+  ></app-item-search>
 
   <!-- Item Actions Section -->
   <div class="item-actions">
     <div class="cart-icon-container" (click)="goToCart()">
       <i class="fas fa-shopping-cart cart-icon"></i>
       <span class="cart-count-badge">{{ cartCount }}</span>
-    </div>    
+    </div>
     <button (click)="navigateToAddForm()" class="add-button">Add</button>
   </div>
 
   <!-- Display Items -->
-  <div class="item-container">
-    <div *ngFor="let item of displayedItems" class="card">
-      <input 
-        type="checkbox" 
-        (change)="toggleCartItemChecked(item, $event)" 
-        [checked]="isItemInCart(item.id)" 
-        class="cart-checkbox" 
-      />
-      <div class="item-info">
-        <h3>{{ item.name }}</h3>
-        <p class="category">{{ item.category }}</p>
-      </div>
-      <div class="price">BD {{ item.price.toFixed(3) }}</div>
-      <div class="buttons">
-        <button (click)="navigateToEditForm(item)" class="button button-edit">Edit</button>
-        <button 
-          *ngIf="item?.id !== undefined" 
-          (click)="deleteItem(item.id!)" 
-          class="button button-delete">
-          Delete
-        </button>
-      </div>
-    </div>
-  </div>
+  <app-item-list
+    [items]="displayedItems"
+    (editItem)="navigateToEditForm($event)"
+    (deleteItem)="deleteItem($event)"
+  ></app-item-list>
 </div>
-

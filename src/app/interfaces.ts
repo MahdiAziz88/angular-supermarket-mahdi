@@ -11,6 +11,7 @@ export interface Category {
 }
 
 export interface Cart {
-  item: Item;
+  id: number;
+  itemId: number;
   quantity: number;
 }

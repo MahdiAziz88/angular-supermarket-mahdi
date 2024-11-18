@@ -1,0 +1,17 @@
+<div class="card">
+  <input
+    type="checkbox"
+    (change)="toggleCartItemChecked($event)"
+    [checked]="isItemInCart()"
+    class="cart-checkbox"
+  />
+  <div class="item-info">
+    <h3>{{ item.name }}</h3>
+    <p class="category">{{ item.category }}</p>
+  </div>
+  <div class="price">BD {{ item.price.toFixed(3) }}</div>
+  <div class="buttons">
+    <button (click)="onEdit()" class="button button-edit">Edit</button>
+    <button (click)="onDelete()" class="button button-delete">Delete</button>
+  </div>
+</div>

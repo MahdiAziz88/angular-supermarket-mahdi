@@ -1,0 +1,47 @@
+/* Category Tabs */
+/* Category Tabs Container */
+.category-tabs {
+    display: flex;
+    justify-content: center;
+    gap: 0;
+    padding: 10px;
+    border-radius: 8px;
+    background-color: transparent;
+    margin-bottom: 20px;
+  }
+  
+  /* Category Tab Styling */
+  .category-tabs a {
+    padding: 10px 20px;
+    border: 1px solid white;
+    border-right: none;
+    color: white;
+    font-weight: bold;
+    text-decoration: none;
+    background-color: transparent;
+    cursor: pointer;
+    transition: background-color 0.3s ease, color 0.3s ease;
+  }
+  
+  .category-tabs a:first-child {
+    border-top-left-radius: 5px;
+    border-bottom-left-radius: 5px;
+  }
+  
+  .category-tabs a:last-child {
+    border-right: 1px solid white;
+    border-top-right-radius: 5px;
+    border-bottom-right-radius: 5px;
+  }
+  
+  .category-tabs a.active,
+  .category-tabs a.active:visited {
+    background-color: white;
+    color: #344958;
+    font-weight: bold;
+  }
+  
+  .category-tabs a:hover {
+    background-color: rgba(255, 255, 255, 0.8);
+    color: #344958;
+  }

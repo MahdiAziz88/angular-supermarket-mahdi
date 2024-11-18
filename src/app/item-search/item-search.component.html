@@ -1,0 +1,15 @@
+<div class="search-container">
+    <input 
+      [(ngModel)]="nameSearch" 
+      placeholder="Name..." 
+      type="text"
+    />
+    <input 
+      [(ngModel)]="priceSearch" 
+      placeholder="Price..." 
+      type="number"
+    />
+    <button (click)="onFilter()" class="filter-button">Filter</button>
+    <button (click)="clearFilters()" class="clear-filters-button">Clear Filters</button> <!-- Clear Filters button -->
+  </div>
+  

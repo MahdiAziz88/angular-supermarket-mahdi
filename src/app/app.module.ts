@@ -12,6 +12,10 @@ import { InMemoryDataService } from './in-memory-data.service';
 import { DashboardComponent } from './dashboard/dashboard.component';
 import { ItemFormComponent } from './item-form/item-form.component';
 import { ShoppingCartComponent } from './shopping-cart/shopping-cart.component';
+import { ItemSearchComponent } from './item-search/item-search.component';
+import { ItemComponent } from './item/item.component';
+import { CategoryTabsComponent } from './category-tabs/category-tabs.component';
+import { ItemListComponent } from './item-list/item-list.component';
 
 @NgModule({
   declarations: [
@@ -19,6 +23,10 @@ import { ShoppingCartComponent } from './shopping-cart/shopping-cart.component';
     DashboardComponent,
     ItemFormComponent,
     ShoppingCartComponent,
+    ItemSearchComponent,
+    ItemComponent,
+    CategoryTabsComponent,
+    ItemListComponent,
   ],
   imports: [
     BrowserModule,

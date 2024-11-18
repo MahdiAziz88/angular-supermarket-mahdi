@@ -26,7 +26,9 @@ export class InMemoryDataService implements InMemoryDbService {
     ];
 
     // Define the cart explicitly with an empty array
-    const cart: Cart[] = [];
+    const cart: Cart[] = [
+      {id: 1, itemId: 1, quantity: 1},
+    ];
 
     return { items, categories, cart };
   }

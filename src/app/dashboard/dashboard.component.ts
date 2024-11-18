@@ -44,10 +44,12 @@ export class DashboardComponent implements OnInit {
 
   fetchItems(): void {
     if (this.selectedCategory) {
-      this.itemService.getItemsByCategory(this.selectedCategory).subscribe((items) => {
-        this.items = items;
-        this.filterItems();
-      });
+      this.itemService
+        .getItemsByCategory(this.selectedCategory)
+        .subscribe((items) => {
+          this.items = items;
+          this.filterItems();
+        });
     } else {
       this.itemService.getItems().subscribe((items) => {
         this.items = items;
@@ -61,7 +63,8 @@ export class DashboardComponent implements OnInit {
       const matchesName = this.nameSearch
         ? item.name.toLowerCase().includes(this.nameSearch.toLowerCase())
         : true;
-      const matchesPrice = this.priceSearch !== null ? item.price === this.priceSearch : true;
+      const matchesPrice =
+        this.priceSearch !== null ? item.price === this.priceSearch : true;
       return matchesName && matchesPrice;
     });
   }
@@ -92,17 +95,6 @@ export class DashboardComponent implements OnInit {
       this.filterItems();
       this.cartService.handleItemDelete(itemId); // Remove the item from the cart
     });
-  }
-
-  toggleCartItemChecked(item: Item, event: Event): void {
-    const isChecked = (event.target as HTMLInputElement).checked;
-    isChecked
-      ? this.cartService.addItemToCart(item)
-      : this.cartService.removeItemFromCart(item.id);
-  }
-
-  isItemInCart(itemId: number): boolean {
-    return this.cartService.isItemInCart(itemId);
   }
 
   goToCart(): void {
