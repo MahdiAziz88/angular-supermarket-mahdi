@@ -1,0 +1,31 @@
+<form [formGroup]="itemForm" (ngSubmit)="onSave()">
+  <!-- Name Field -->
+  <input formControlName="name" placeholder="Name" type="text" />
+  <div *ngIf="name?.invalid && (name?.dirty || name?.touched)">
+    <small *ngIf="name?.errors?.required" class="error">Name is required.</small>
+  </div>
+
+  <!-- Price Field -->
+  <input formControlName="price" placeholder="Price" type="number" />
+  <div *ngIf="price?.invalid && (price?.dirty || price?.touched)">
+    <small *ngIf="price?.errors?.required" class="error">Price is required.</small>
+    <small *ngIf="price?.errors?.min" class="error">Price cannot be negative.</small>
+  </div>
+
+  <!-- Category Field -->
+  <select formControlName="category">
+    <option value="" disabled hidden>Category</option> <!-- Placeholder option -->
+    <option *ngFor="let cat of categories" [value]="cat.name">
+      {{ cat.name }}
+    </option>
+  </select>
+  <div *ngIf="category?.invalid && (category?.dirty || category?.touched)">
+    <small *ngIf="category?.errors?.required" class="error">Category is required.</small>
+  </div>
+
+  <!-- Form Buttons -->
+  <div class="form-buttons">
+    <button type="submit" class="button-save" [disabled]="itemForm.invalid">Save</button>
+    <button type="button" (click)="onCancel()" class="button-cancel">Cancel</button>
+  </div>
+</form>

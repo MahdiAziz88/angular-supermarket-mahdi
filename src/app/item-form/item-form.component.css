@@ -1,0 +1,97 @@
+/* Form Container Styling */
+form {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 15px; /* Space between fields */
+  padding: 20px;
+  width: 100%;
+  max-width: 400px; /* Centered form with a max width */
+  margin: 0 auto;
+}
+
+/* Input Field and Dropdown Styling */
+input[type="text"],
+input[type="number"],
+select {
+  width: 100%;
+  box-sizing: border-box; /* Ensures padding and border are included in the width */
+  padding: 12px;
+  border: 1px solid #344958; /* Border color */
+  border-radius: 5px;
+  background-color: transparent; /* Transparent background */
+  color: #344958; /* Text color */
+  font-size: 1rem;
+  line-height: 1.2; /* Ensures consistent height with inputs */
+  transition: border-color 0.3s ease;
+  -webkit-appearance: none; /* Removes default styles for select */
+  -moz-appearance: none;
+  appearance: none;
+}
+
+/* Adjust padding and appearance for select */
+select {
+  background-image: url('data:image/svg+xml;charset=US-ASCII,%3Csvg xmlns%3D%27http%3A//www.w3.org/2000/svg%27 width%3D%2710%27 height%3D%275%27 viewBox%3D%270 0 10 5%27 fill%3D%27%23344958%27%3E%3Cpolygon points%3D%270,0 10,0 5,5%27/%3E%3C/svg%3E'); /* Custom dropdown arrow */
+  background-repeat: no-repeat;
+  background-position: right 10px center;
+  background-size: 12px 12px;
+  cursor: pointer;
+  padding-right: 30px; /* Ensures space for dropdown arrow */
+}
+
+/* Placeholder styling for better visibility */
+input::placeholder,
+select {
+  color: #344958;
+  opacity: 0.8;
+}
+
+/* Save and Cancel Buttons Container */
+.form-buttons {
+  display: flex;
+  justify-content: space-between;
+  gap: 20px;
+  width: 100%;
+}
+
+/* Save Button Styling */
+.button-save {
+  background-color: #00a91a; /* Green background */
+  color: white; /* White text */
+  border: none;
+  padding: 10px 20px;
+  font-size: 1.1rem;
+  border-radius: 5px;
+  cursor: pointer;
+  flex: 1;
+  transition: background-color 0.3s ease;
+}
+
+.button-save:hover {
+  background-color: #008f18; /* Darker green on hover */
+}
+
+/* Cancel Button Styling */
+.button-cancel {
+  background-color: #e30808; /* Red background */
+  color: white; /* White text */
+  border: none;
+  padding: 10px 20px;
+  font-size: 1.1rem;
+  border-radius: 5px;
+  cursor: pointer;
+  flex: 1;
+  transition: background-color 0.3s ease;
+}
+
+.button-cancel:hover {
+  background-color: #c00707; /* Darker red on hover */
+}
+
+/* Error Message Styling */
+.error {
+  color: red;
+  font-size: 12px;
+  align-self: flex-start; /* Aligns the error message to the left */
+  margin-top: -10px; /* Adjust if necessary to reduce spacing */
+}

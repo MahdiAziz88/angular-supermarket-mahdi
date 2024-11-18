@@ -1,0 +1,91 @@
+/* Shopping Cart Item Styling */
+.cart-item {
+    display: grid;
+    grid-template-columns: 2fr 1fr auto; /* Item | Price | Actions */
+    align-items: center;
+    background-color: transparent;
+    border: 1px solid #344958;
+    border-radius: 8px;
+    padding: 10px;
+    max-width: 800px; /* Same as the main container's width */
+    margin: 0 auto 10px auto; /* Centered and spaced */
+    color: #344958;
+    font-family: 'Poppins', sans-serif;
+  }
+  
+  /* Cart Item Information */
+  .cart-item-info h3 {
+    margin: 0;
+    font-size: 1.2rem;
+  }
+  
+  /* Price Styling */
+  .cart-price {
+    text-align: center;
+    font-weight: bold;
+    font-size: 1rem;
+    color: #344958;
+  }
+  
+  /* Quantity and Remove Button Container */
+  .cart-actions {
+    display: flex;
+    align-items: center;
+  }
+  
+/* Quantity Input Styling */
+.quantity-input {
+    width: 40px; /* Smaller width */
+    height: 36.3px; /* Adjusted height */
+    border: 1px solid #344958; /* Same border as cart item */
+    background-color: transparent; /* Match cart item background */
+    color: #344958; /* Match text color */
+    text-align: center;
+    font-size: 0.9rem; /* Consistent font size */
+    border-radius: 5px 0 0 5px; /* Rounded left corners */
+    margin: 0;
+    box-shadow: none; /* Remove any extra shadow */
+  }
+  
+  
+  /* Remove Button Styling */
+  .remove-button {
+    background-color: #cc2c2c;
+    color: #fff;
+    border: none;
+    width: 40px; /* Same height and width as input for square look */
+    height: 40px;
+    border-radius: 0 5px 5px 0; /* Rounded right corners */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    font-size: 1.2rem;
+    transition: background-color 0.3s ease;
+  }
+  
+  .remove-button i {
+    font-size: 1rem; /* Icon size adjustment */
+  }
+  
+  .remove-button:hover {
+    background-color: #b12222; /* Darker red on hover */
+  }
+  
+  
+  /* Divider Styling */
+  .divider {
+    border: none;
+    border-top: 1px solid #344958; /* Matches text color */
+    margin: 20px 0;
+  }
+  
+  /* Total Price Styling */
+  .total {
+    text-align: right;
+    font-size: 1.2rem;
+    font-weight: bold;
+    color: #344958;
+    margin-top: 20px;
+  }
+  
