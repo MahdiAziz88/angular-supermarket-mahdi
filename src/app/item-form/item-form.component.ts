@@ -57,7 +57,7 @@ export class ItemFormComponent implements OnInit {
   loadItem(id: number): void {
     this.itemService.getItems().subscribe(items => {
       const item = items.find(i => i.id === id);
-      if (item) this.itemForm.patchValue(item);
+      if (item) this.itemForm.patchValue(item); // Prefill form for editing
     });
   }
 
@@ -67,9 +67,9 @@ export class ItemFormComponent implements OnInit {
     const item: Item = { ...this.itemForm.value, id: this.itemId ? this.itemId : 0 };
 
     if (this.isEditMode) {
-      this.itemService.updateItem(item).subscribe(() => this.router.navigate(['/all-items']));
+      this.itemService.updateItem(item).subscribe(() => this.router.navigate(['/all-items'])); // Emit form data to parent
     } else {
-      this.itemService.addItem(item).subscribe(() => this.router.navigate(['/all-items']));
+      this.itemService.addItem(item).subscribe(() => this.router.navigate(['/all-items'])); // Emit form data to parent
     }
   }
 
