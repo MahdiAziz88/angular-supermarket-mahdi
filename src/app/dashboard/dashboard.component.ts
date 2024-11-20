@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
-import { Router } from '@angular/router';
 import { ItemService } from '../item.service';
 import { CartService } from '../cart.service';
+import { Router, ActivatedRoute } from '@angular/router';
 import { Item, Category } from '../interfaces';
 
 @Component({
@@ -11,22 +11,34 @@ import { Item, Category } from '../interfaces';
 })
 export class DashboardComponent implements OnInit {
   items: Item[] = [];
-  categories: Category[] = [];
   displayedItems: Item[] = [];
-  selectedCategory: string | null = null;
+  categories: Category[] = [];
   nameSearch: string = '';
+  selectedCategory: string = '';
   priceSearch: number | null = null;
   cartCount: number = 0;
 
   constructor(
     private itemService: ItemService,
     private cartService: CartService,
-    private router: Router
+    private router: Router,
+    private route: ActivatedRoute
   ) {}
 
   ngOnInit(): void {
     this.getItems();
+    this.getCategories();
     this.subscribeToCartCount();
+    this.route.queryParams.subscribe(params => {
+      this.selectedCategory = params['category'] || '';
+      this.filterItems();
+    });
+  }
+
+  getCategories(): void {
+    this.itemService.getCategories().subscribe((categories) => {
+      this.categories = categories;
+    });
   }
 
   getItems(): void {
@@ -41,9 +53,12 @@ export class DashboardComponent implements OnInit {
       const matchesName = this.nameSearch
         ? item.name.toLowerCase().includes(this.nameSearch.toLowerCase())
         : true;
+      const matchesCategory = this.selectedCategory
+        ? item.category === this.selectedCategory
+        : true;
       const matchesPrice =
         this.priceSearch !== null ? item.price === this.priceSearch : true;
-      return matchesName && matchesPrice;
+      return matchesName && matchesCategory && matchesPrice;
     });
   }
 
