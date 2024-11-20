@@ -8,9 +8,9 @@ import { Item } from '../interfaces';
   styleUrls: ['./item.component.css'],
 })
 export class ItemComponent implements OnInit {
-  @Input() item!: Item;
-  @Output() edit = new EventEmitter<Item>();
-  @Output() delete = new EventEmitter<number>();
+  @Input() item!: Item; // Receives the item to display
+  @Output() edit = new EventEmitter<Item>(); // Emits the item to be edited
+  @Output() delete = new EventEmitter<number>(); // Emits the ID of the item to be deleted
   isInCart: boolean = false;
 
   constructor(private cartService: CartService) {}
@@ -61,12 +61,12 @@ export class ItemComponent implements OnInit {
   }
 
   onEdit(): void {
-    this.edit.emit(this.item);
+    this.edit.emit(this.item); // Emits the item object (makes it visible to the parent component (Itemlist))
   }
 
   onDelete(): void {
     if (this.item.id !== undefined) {
-      this.delete.emit(this.item.id);
+      this.delete.emit(this.item.id); // Emits the item's ID
     }
   }
 }
