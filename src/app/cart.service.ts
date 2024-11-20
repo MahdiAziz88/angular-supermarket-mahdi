@@ -29,6 +29,19 @@ export class CartService {
   }
 
   // Get all cart items
+  /**
+   * Retrieves the items in the cart along with their quantities.
+   *
+   * This function makes an HTTP GET request to fetch the cart items, which contain item IDs and quantities.
+   * It then maps each cart item to an object containing the actual item details and its quantity.
+   * 
+   * The process involves:
+   * - Using `map` to transform the array of cart items by replacing item IDs with the actual item details.
+   * - Using `mergeMap` to flatten the observable of arrays into a single observable.
+   * - Using `forkJoin` to wait for all item details to be fetched before emitting the final array of cart items.
+   * 
+   * @returns An observable that emits an array of objects, each containing an item and its quantity.
+   */
   getCartItems(): Observable<{ item: Item; quantity: number }[]> {
     return this.http.get<{ itemId: number; quantity: number }[]>(this.cartUrl).pipe(
       map(cart => cart.map(cartItem => ({
