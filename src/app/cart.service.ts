@@ -12,9 +12,20 @@ export class CartService {
   private itemsUrl = 'api/items'; // URL to items api
   private cartCountSubject = new BehaviorSubject<number>(0);
   cartCount$ = this.cartCountSubject.asObservable();
+  private nextId = 1; // Local counter for generating new IDs
 
   constructor(private http: HttpClient) {
     this.updateCartCount();
+    this.initializeNextId();
+  }
+
+  // Initialize the next ID based on the existing cart items
+  private initializeNextId(): void {
+    this.http.get<{ id: number }[]>(this.cartUrl).subscribe(cartItems => {
+      if (cartItems.length > 0) {
+        this.nextId = Math.max(...cartItems.map(cartItem => cartItem.id)) + 1;
+      }
+    });
   }
 
   // Get all cart items
@@ -32,17 +43,11 @@ export class CartService {
 
   // Add an item to the cart
   addItemToCart(item: Item): Observable<{ id: number; itemId: number; quantity: number }> {
-    return this.http.get<{ id: number }[]>(this.cartUrl).pipe(
-      map(cartItems => {
-        const newId = cartItems.length > 0 ? Math.max(...cartItems.map(cartItem => cartItem.id)) + 1 : 1;
-        const cartItem = { id: newId, itemId: item.id, quantity: 1 };
-        console.log('Adding item to cart:', cartItem); // Add logging here
-        return cartItem;
-      }),
-      mergeMap(cartItem => this.http.post<{ id: number; itemId: number; quantity: number }>(this.cartUrl, cartItem).pipe(
-        tap(() => this.updateCartCount()),
-        catchError(this.handleError<{ id: number; itemId: number; quantity: number }>('addItemToCart'))
-      ))
+    const cartItem = { id: this.nextId++, itemId: item.id, quantity: 1 };
+    console.log('Adding item to cart:', cartItem); // Add logging here
+    return this.http.post<{ id: number; itemId: number; quantity: number }>(this.cartUrl, cartItem).pipe(
+      tap(() => this.updateCartCount()),
+      catchError(this.handleError<{ id: number; itemId: number; quantity: number }>('addItemToCart'))
     );
   }
 
