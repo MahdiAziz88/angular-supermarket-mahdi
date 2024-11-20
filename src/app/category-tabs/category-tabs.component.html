@@ -1,19 +1,18 @@
 <div class="category-tabs">
-    <a
-      [routerLink]="['/items']"
-      [queryParams]="{}"
-      routerLinkActive="active"
-      [routerLinkActiveOptions]="{ exact: true }"
-    >
-      All Items
-    </a>
-    <a
-      *ngFor="let category of categories"
-      [routerLink]="['/items']"
-      [queryParams]="{ category: category.name }"
-      routerLinkActive="active"
-    >
-      {{ category.name }}
-    </a>
-  </div>
-  
+  <a
+    [routerLink]="['/items']"
+    [queryParams]="{}"
+    routerLinkActive="active"
+    [routerLinkActiveOptions]="{ exact: true }"
+  >
+    All Items
+  </a>
+  <a
+    *ngFor="let category of categories"
+    [routerLink]="['/items']"
+    [queryParams]="{ category: category.name }"
+    routerLinkActive="active"
+  >
+    {{ category.name }}
+  </a>
+</div>

@@ -37,10 +37,11 @@ export class ItemService {
   // Fetch categories
   getCategories(): Observable<Category[]> {
     return this.http.get<Category[]>(this.categoriesUrl).pipe(
-      tap(() => console.log('Fetched categories')),
+      tap((categories) => console.log('Fetched categories in ItemService:', categories)),
       catchError(this.handleError<Category[]>('getCategories', []))
     );
   }
+  
 
   // Add a new item
   addItem(item: Item): Observable<Item> {

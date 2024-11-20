@@ -36,17 +36,27 @@ export class ItemComponent implements OnInit {
 
   addToCart(): void {
     if (!this.isInCart) {
-      this.cartService.addItemToCart(this.item).subscribe(() => {
-        this.isInCart = true;
-      });
+      this.cartService.addItemToCart(this.item).subscribe(
+        () => {
+          this.isInCart = true;
+        },
+        (error) => {
+          console.error('Error adding item to cart:', error);
+        }
+      );
     }
   }
 
   removeFromCart(): void {
     if (this.isInCart) {
-      this.cartService.removeItemFromCart(this.item.id).subscribe(() => {
-        this.isInCart = false;
-      });
+      this.cartService.removeItemFromCart(this.item.id).subscribe(
+        () => {
+          this.isInCart = false;
+        },
+        (error) => {
+          console.error('Error removing item from cart:', error);
+        }
+      );
     }
   }
 

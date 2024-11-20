@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { InMemoryDbService, RequestInfo } from 'angular-in-memory-web-api';
+import { InMemoryDbService } from 'angular-in-memory-web-api';
 import { Item, Category, Cart } from './interfaces';
 
 @Injectable({
@@ -25,10 +25,7 @@ export class InMemoryDataService implements InMemoryDbService {
       { id: 13, name: 'Snacks' },
     ];
 
-    // Define the cart explicitly with an empty array
-    const cart: Cart[] = [
-      {id: 1, itemId: 1, quantity: 1},
-    ];
+    const cart: { id: number, itemId: number; quantity: number }[] = [];
 
     return { items, categories, cart };
   }

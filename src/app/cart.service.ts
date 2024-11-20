@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { BehaviorSubject, Observable, forkJoin } from 'rxjs';
-import { map, mergeMap } from 'rxjs/operators';
+import { BehaviorSubject, Observable, forkJoin, of } from 'rxjs';
+import { map, mergeMap, catchError, tap } from 'rxjs/operators';
 import { Item } from './interfaces';
 
 @Injectable({
@@ -31,24 +31,34 @@ export class CartService {
   }
 
   // Add an item to the cart
-  addItemToCart(item: Item): Observable<void> {
-    const cartItem = { itemId: item.id, quantity: 1 };
-    return this.http.post<void>(this.cartUrl, cartItem).pipe(
-      map(() => this.updateCartCount())
+  addItemToCart(item: Item): Observable<{ id: number; itemId: number; quantity: number }> {
+    return this.http.get<{ id: number }[]>(this.cartUrl).pipe(
+      map(cartItems => {
+        const newId = cartItems.length > 0 ? Math.max(...cartItems.map(cartItem => cartItem.id)) + 1 : 1;
+        const cartItem = { id: newId, itemId: item.id, quantity: 1 };
+        console.log('Adding item to cart:', cartItem); // Add logging here
+        return cartItem;
+      }),
+      mergeMap(cartItem => this.http.post<{ id: number; itemId: number; quantity: number }>(this.cartUrl, cartItem).pipe(
+        tap(() => this.updateCartCount()),
+        catchError(this.handleError<{ id: number; itemId: number; quantity: number }>('addItemToCart'))
+      ))
     );
   }
 
   // Update item quantity in the cart
-  updateQuantity(itemId: number, quantity: number): Observable<void> {
-    return this.http.put<void>(`${this.cartUrl}/${itemId}`, { quantity }).pipe(
-      map(() => this.updateCartCount())
+  updateQuantity(itemId: number, quantity: number): Observable<{ itemId: number; quantity: number }> {
+    return this.http.put<{ itemId: number; quantity: number }>(`${this.cartUrl}/${itemId}`, { quantity }).pipe(
+      tap(() => this.updateCartCount()),
+      catchError(this.handleError<{ itemId: number; quantity: number }>('updateQuantity'))
     );
   }
 
   // Remove an item from the cart
-  removeItemFromCart(itemId: number): Observable<void> {
-    return this.http.delete<void>(`${this.cartUrl}/${itemId}`).pipe(
-      map(() => this.updateCartCount())
+  removeItemFromCart(itemId: number): Observable<{ itemId: number }> {
+    return this.http.delete<{ itemId: number }>(`${this.cartUrl}/${itemId}`).pipe(
+      tap(() => this.updateCartCount()),
+      catchError(this.handleError<{ itemId: number }>('removeItemFromCart'))
     );
   }
 
@@ -63,5 +73,13 @@ export class CartService {
       const count = cartItems.reduce((sum, cartItem) => sum + cartItem.quantity, 0);
       this.cartCountSubject.next(count);
     });
+  }
+
+  // Handle HTTP operation that failed.
+  private handleError<T>(operation = 'operation', result?: T) {
+    return (error: any): Observable<T> => {
+      console.error(`${operation} failed: ${error.message}`);
+      return of(result as T);
+    };
   }
 }
