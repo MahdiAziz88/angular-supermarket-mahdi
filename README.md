@@ -25,3 +25,61 @@ Run `ng e2e` to execute the end-to-end tests via a platform of your choice. To u
 ## Further help
 
 To get more help on the Angular CLI use `ng help` or go check out the [Angular CLI Overview and Command Reference](https://angular.io/cli) page.
+
+
+# Angular Supermarket
+
+## Overview
+Angular Supermarket is a web application designed for managing supermarket inventory, shopping carts, and item searches. 
+The project demonstrates key Angular concepts, including component-based architecture, routing, services, and dependency injection.
+
+## Features
+- Dashboard with an overview of available items and categories.
+- Item management: Add, update, delete, and search for items.
+- Shopping cart functionality for adding and removing items.
+- In-memory data service to simulate backend API.
+
+## Technologies
+- **Frontend**: Angular
+- **Backend**: In-memory Web API (mock backend)
+- **Styling**: CSS
+
+## Installation
+
+1. Clone the repository:
+   ```bash
+   git clone <repository-url>
+   ```
+2. Navigate to the project directory:
+   ```bash
+   cd angular-supermarket
+   ```
+3. Install dependencies:
+   ```bash
+   npm install
+   ```
+4. Run the application:
+   ```bash
+   ng serve
+   ```
+5. Open your browser and navigate to:
+   ```
+   http://localhost:4200
+   ```
+
+## Usage
+1. Navigate to the dashboard to view item categories and available products.
+2. Use the item search feature to find specific products.
+3. Add items to your shopping cart and review the cart contents.
+
+## Folder Structure
+- `src/app`: Contains the main application logic, including components, services, and routing.
+- `src/assets`: Static assets like images.
+- `src/environments`: Configuration files for different environments.
+- `src/styles.css`: Global styles.
+
+## Contributing
+Feel free to fork this repository and submit pull requests for any improvements or new features.
+
+## License
+This project is licensed under the MIT License.

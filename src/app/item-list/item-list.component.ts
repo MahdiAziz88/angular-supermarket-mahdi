@@ -7,7 +7,7 @@ import { Item } from '../interfaces';
   styleUrls: ['./item-list.component.css'],
 })
 export class ItemListComponent {
-  @Input() items: Item[] = [];
+  @Input() items: Item[] = []; // Accepts data from the parent
   @Output() editItem = new EventEmitter<Item>();
   @Output() deleteItem = new EventEmitter<number>();
 
