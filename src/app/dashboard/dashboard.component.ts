@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
+import { Router } from '@angular/router';
 import { ItemService } from '../item.service';
 import { CartService } from '../cart.service';
 import { Item, Category } from '../interfaces';
@@ -16,46 +16,24 @@ export class DashboardComponent implements OnInit {
   selectedCategory: string | null = null;
   nameSearch: string = '';
   priceSearch: number | null = null;
-  cartCount = 0;
+  cartCount: number = 0;
 
   constructor(
     private itemService: ItemService,
     private cartService: CartService,
-    private route: ActivatedRoute,
     private router: Router
   ) {}
 
   ngOnInit(): void {
-    this.getCategories();
+    this.getItems();
     this.subscribeToCartCount();
-
-    // Listen for query parameter changes
-    this.route.queryParams.subscribe((params) => {
-      this.selectedCategory = params['category'] || null;
-      this.fetchItems();
-    });
   }
 
-  getCategories(): void {
-    this.itemService.getCategories().subscribe((categories) => {
-      this.categories = categories;
+  getItems(): void {
+    this.itemService.getItems().subscribe((items) => {
+      this.items = items;
+      this.filterItems();
     });
-  }
-
-  fetchItems(): void {
-    if (this.selectedCategory) {
-      this.itemService
-        .getItemsByCategory(this.selectedCategory)
-        .subscribe((items) => {
-          this.items = items;
-          this.filterItems();
-        });
-    } else {
-      this.itemService.getItems().subscribe((items) => {
-        this.items = items;
-        this.filterItems();
-      });
-    }
   }
 
   filterItems(): void {
@@ -93,7 +71,9 @@ export class DashboardComponent implements OnInit {
     this.itemService.deleteItem(itemId).subscribe(() => {
       this.items = this.items.filter((item) => item.id !== itemId);
       this.filterItems();
-      this.cartService.handleItemDelete(itemId); // Remove the item from the cart
+      this.cartService.removeItemFromCart(itemId).subscribe(() => {
+        // Optionally handle any additional logic after removing the item from the cart
+      });
     });
   }
 

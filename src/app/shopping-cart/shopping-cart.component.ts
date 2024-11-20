@@ -1,6 +1,5 @@
 import { Component, OnInit } from '@angular/core';
 import { CartService } from '../cart.service';
-import { ItemService } from '../item.service';
 import { Item } from '../interfaces';
 
 @Component({
@@ -12,21 +11,17 @@ export class ShoppingCartComponent implements OnInit {
   cartItems: { item: Item; quantity: number }[] = [];
   total: number = 0;
 
-  constructor(public cartService: CartService, private itemService: ItemService) {}
+  constructor(public cartService: CartService) {}
 
   ngOnInit(): void {
-    // Listen for item updates and reflect changes in the cart
-    this.itemService.getItems().subscribe((latestItems) => {
-      latestItems.forEach((updatedItem) => {
-        this.cartService.handleItemUpdate(updatedItem);
-      });
-      this.refreshCart();
-    });
+    this.refreshCart();
   }
 
   refreshCart(): void {
-    this.cartItems = this.cartService.getCartItems();
-    this.calculateTotal();
+    this.cartService.getCartItems().subscribe(cartItems => {
+      this.cartItems = cartItems;
+      this.calculateTotal();
+    });
   }
 
   calculateTotal(): void {
@@ -37,13 +32,14 @@ export class ShoppingCartComponent implements OnInit {
   }
 
   updateQuantity(itemId: number, quantity: number): void {
-    this.cartService.updateQuantity(itemId, quantity);
-    this.calculateTotal();
+    this.cartService.updateQuantity(itemId, quantity).subscribe(() => {
+      this.refreshCart();
+    });
   }
 
   removeItemFromCart(itemId: number): void {
-    this.cartService.removeItemFromCart(itemId);
-    this.refreshCart();
+    this.cartService.removeItemFromCart(itemId).subscribe(() => {
+      this.refreshCart();
+    });
   }
 }
-

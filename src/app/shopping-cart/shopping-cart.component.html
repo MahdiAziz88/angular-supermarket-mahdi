@@ -1,5 +1,5 @@
 <h2>Your Shopping Cart</h2>
-<div *ngFor="let cartItem of cartService.getCartItems()" class="cart-item">
+<div *ngFor="let cartItem of cartItems" class="cart-item">
   <div class="cart-item-info">
     <h3>{{ cartItem.item.name }}</h3>
   </div>
@@ -21,5 +21,5 @@
 </div>
 <hr class="divider" />
 <div class="total">
-  <strong>Total: BD {{ cartService.getTotalPrice().toFixed(3) }}</strong>
+  <strong>Total: BD {{ total.toFixed(3) }}</strong>
 </div>

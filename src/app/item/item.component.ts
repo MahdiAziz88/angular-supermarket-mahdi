@@ -1,37 +1,60 @@
-import { Component, EventEmitter, Input, Output } from '@angular/core';
-import { Item } from '../interfaces';
+import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 import { CartService } from '../cart.service';
+import { Item } from '../interfaces';
 
 @Component({
   selector: 'app-item',
   templateUrl: './item.component.html',
   styleUrls: ['./item.component.css'],
 })
-export class ItemComponent {
+export class ItemComponent implements OnInit {
   @Input() item!: Item;
   @Output() edit = new EventEmitter<Item>();
   @Output() delete = new EventEmitter<number>();
+  isInCart: boolean = false;
 
-  constructor(public cartService: CartService) {}
+  constructor(private cartService: CartService) {}
+
+  ngOnInit(): void {
+    this.checkIfItemInCart();
+  }
+
+  checkIfItemInCart(): void {
+    this.cartService.getCartItems().subscribe(cartItems => {
+      this.isInCart = cartItems.some(cartItem => cartItem.item.id === this.item.id);
+    });
+  }
 
   toggleCartItemChecked(event: Event): void {
     const isChecked = (event.target as HTMLInputElement).checked;
     if (isChecked) {
-      this.cartService.addItemToCart(this.item);
+      this.addToCart();
     } else {
-      this.cartService.removeItemFromCart(this.item.id);
+      this.removeFromCart();
     }
   }
 
-  isItemInCart(): boolean {
-    return this.cartService.isItemInCart(this.item.id);
+  addToCart(): void {
+    if (!this.isInCart) {
+      this.cartService.addItemToCart(this.item).subscribe(() => {
+        this.isInCart = true;
+      });
+    }
   }
 
-  onEdit() {
+  removeFromCart(): void {
+    if (this.isInCart) {
+      this.cartService.removeItemFromCart(this.item.id).subscribe(() => {
+        this.isInCart = false;
+      });
+    }
+  }
+
+  onEdit(): void {
     this.edit.emit(this.item);
   }
 
-  onDelete() {
+  onDelete(): void {
     if (this.item.id !== undefined) {
       this.delete.emit(this.item.id);
     }

@@ -1,87 +1,67 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject } from 'rxjs';
+import { HttpClient } from '@angular/common/http';
+import { BehaviorSubject, Observable, forkJoin } from 'rxjs';
+import { map, mergeMap } from 'rxjs/operators';
 import { Item } from './interfaces';
 
 @Injectable({
   providedIn: 'root',
 })
 export class CartService {
-  private cartItems: { item: Item; quantity: number }[] = [];
+  private cartUrl = 'api/cart'; // URL to web api
+  private itemsUrl = 'api/items'; // URL to items api
   private cartCountSubject = new BehaviorSubject<number>(0);
   cartCount$ = this.cartCountSubject.asObservable();
 
-  constructor() {
-    this.updateCartCount(); // Initialize the cart count
-  }
-
-  // Update the cart count observable
-  private updateCartCount() {
-    const totalItems = this.getTotalItems();
-    this.cartCountSubject.next(totalItems);
+  constructor(private http: HttpClient) {
+    this.updateCartCount();
   }
 
   // Get all cart items
-  getCartItems(): { item: Item; quantity: number }[] {
-    return this.cartItems;
+  getCartItems(): Observable<{ item: Item; quantity: number }[]> {
+    return this.http.get<{ itemId: number; quantity: number }[]>(this.cartUrl).pipe(
+      map(cart => cart.map(cartItem => ({
+        item: this.getItemById(cartItem.itemId),
+        quantity: cartItem.quantity
+      }))),
+      mergeMap(cartItems => forkJoin(cartItems.map(cartItem => 
+        cartItem.item.pipe(map(item => ({ item, quantity: cartItem.quantity })))
+      )))
+    );
   }
 
   // Add an item to the cart
-  addItemToCart(item: Item): void {
-    const existingItem = this.cartItems.find((ci) => ci.item.id === item.id);
-    if (existingItem) {
-      existingItem.quantity++;
-    } else {
-      this.cartItems.push({ item, quantity: 1 });
-    }
-    this.updateCartCount();
+  addItemToCart(item: Item): Observable<void> {
+    const cartItem = { itemId: item.id, quantity: 1 };
+    return this.http.post<void>(this.cartUrl, cartItem).pipe(
+      map(() => this.updateCartCount())
+    );
+  }
+
+  // Update item quantity in the cart
+  updateQuantity(itemId: number, quantity: number): Observable<void> {
+    return this.http.put<void>(`${this.cartUrl}/${itemId}`, { quantity }).pipe(
+      map(() => this.updateCartCount())
+    );
   }
 
   // Remove an item from the cart
-  removeItemFromCart(itemId: number): void {
-    this.cartItems = this.cartItems.filter((ci) => ci.item.id !== itemId);
-    this.updateCartCount();
+  removeItemFromCart(itemId: number): Observable<void> {
+    return this.http.delete<void>(`${this.cartUrl}/${itemId}`).pipe(
+      map(() => this.updateCartCount())
+    );
   }
 
-  // Check if an item is in the cart
-  isItemInCart(itemId: number): boolean {
-    return this.cartItems.some((ci) => ci.item.id === itemId);
+  // Helper method to get item by ID
+  private getItemById(itemId: number): Observable<Item> {
+    return this.http.get<Item>(`${this.itemsUrl}/${itemId}`);
   }
 
-  // Update the quantity of an item in the cart
-  updateQuantity(itemId: number, quantity: number): void {
-    const cartItem = this.cartItems.find((ci) => ci.item.id === itemId);
-    if (cartItem) {
-      cartItem.quantity = quantity > 0 ? quantity : 1;
-    }
-    this.updateCartCount();
-  }
-
-  // Clear all items from the cart
-  clearCart(): void {
-    this.cartItems = [];
-    this.updateCartCount();
-  }
-
-  // Get the total number of items in the cart
-  getTotalItems(): number {
-    return this.cartItems.reduce((total, ci) => total + ci.quantity, 0);
-  }
-
-  // Get the total price of items in the cart
-  getTotalPrice(): number {
-    return this.cartItems.reduce((total, ci) => total + ci.item.price * ci.quantity, 0);
-  }
-
-  // Handle item updates in the cart
-  handleItemUpdate(updatedItem: Item): void {
-    const cartItem = this.cartItems.find((ci) => ci.item.id === updatedItem.id);
-    if (cartItem) {
-      cartItem.item = updatedItem; // Replace the cart item with the updated item
-    }
-  }
-
-  // Handle item deletion in the cart
-  handleItemDelete(deletedItemId: number): void {
-    this.removeItemFromCart(deletedItemId); // Remove the item from the cart
+  // Update cart count
+  private updateCartCount(): void {
+    this.getCartItems().subscribe(cartItems => {
+      const count = cartItems.reduce((sum, cartItem) => sum + cartItem.quantity, 0);
+      this.cartCountSubject.next(count);
+    });
   }
 }
