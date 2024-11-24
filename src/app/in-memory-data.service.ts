@@ -25,8 +25,12 @@ export class InMemoryDataService implements InMemoryDbService {
       { id: 13, name: 'Snacks' },
     ];
 
-    const cart: { id: number, itemId: number; quantity: number }[] = [];
+    const cart: Cart[] = [];
 
     return { items, categories, cart };
+  }
+
+  genId(elements: Item[] | Category[] | Cart[]): number {
+    return elements.length > 0 ? Math.max(...elements.map(element => element.id)) + 1 : 1;
   }
 }

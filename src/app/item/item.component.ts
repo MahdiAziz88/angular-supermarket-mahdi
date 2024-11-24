@@ -1,6 +1,6 @@
 import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 import { CartService } from '../cart.service';
-import { Item } from '../interfaces';
+import { Cart, Item } from '../interfaces';
 
 @Component({
   selector: 'app-item',
@@ -27,11 +27,12 @@ export class ItemComponent implements OnInit {
    * 
    * The `some` method is used to iterate over the cart items and check if any of them
    * match the current item's ID.
-   * The some() method in JavaScript is an array method that checks whether at least one element in an array satisfies a given condition. If any element passes the condition, some() returns true; otherwise, it returns false.
    */
   checkIfItemInCart(): void {
-    this.cartService.getCartItems().subscribe(cartItems => {
-      this.isInCart = cartItems.some(cartItem => cartItem.item.id === this.item.id);
+    this.cartService.getCartItems().subscribe((cartItems) => {
+      this.isInCart = cartItems.some(
+        (cartItem) => cartItem.itemId === this.item.id
+      );
     });
   }
 
@@ -46,11 +47,16 @@ export class ItemComponent implements OnInit {
 
   addToCart(): void {
     if (!this.isInCart) {
-      this.cartService.addItemToCart(this.item).subscribe(
+      const newCartItem: Cart = {
+        id: 0, // Assuming 0 or undefined; actual ID will be assigned by the backend
+        itemId: this.item.id,
+        quantity: 1,
+      };
+      this.cartService.addCartItem(newCartItem).subscribe(
         () => {
           this.isInCart = true;
         },
-        (error) => {
+        (error: any) => {
           console.error('Error adding item to cart:', error);
         }
       );
@@ -58,16 +64,21 @@ export class ItemComponent implements OnInit {
   }
 
   removeFromCart(): void {
-    if (this.isInCart) {
-      this.cartService.removeItemFromCart(this.item.id).subscribe(
-        () => {
-          this.isInCart = false;
-        },
-        (error) => {
-          console.error('Error removing item from cart:', error);
-        }
+    this.cartService.getCartItems().subscribe((cartItems) => {
+      const cartItem = cartItems.find(
+        (item) => item.itemId === this.item.id
       );
-    }
+      if (cartItem) {
+        this.cartService.deleteCartItem(cartItem.id).subscribe(
+          () => {
+            this.isInCart = false;
+          },
+          (error: any) => {
+            console.error('Error removing item from cart:', error);
+          }
+        );
+      }
+    });
   }
 
   onEdit(): void {

@@ -4,6 +4,7 @@
     [queryParams]="{}"
     routerLinkActive="active"
     [routerLinkActiveOptions]="{ exact: true }"
+    (click)="onCategorySelected('')"
   >
     All Items
   </a>
@@ -12,6 +13,7 @@
     [routerLink]="['/items']"
     [queryParams]="{ category: category.name }"
     routerLinkActive="active"
+    (click)="onCategorySelected(category.name)"
   >
     {{ category.name }}
   </a>

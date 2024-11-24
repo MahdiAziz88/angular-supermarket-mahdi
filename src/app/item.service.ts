@@ -25,12 +25,12 @@ export class ItemService {
     );
   }
 
-  // Fetch items by category
-  getItemsByCategory(categoryName: string): Observable<Item[]> {
-    const url = `${this.itemsUrl}/?category=${encodeURIComponent(categoryName)}`;
-    return this.http.get<Item[]>(url).pipe(
-      tap(() => console.log(`Fetched items for category: ${categoryName}`)),
-      catchError(this.handleError<Item[]>('getItemsByCategory', []))
+/** GET item by id. Will 404 if id not found */
+  getItem(id: number): Observable<Item> {
+    const url = `${this.itemsUrl}/${id}`;
+    return this.http.get<Item>(url).pipe(
+      tap(_ => console.log(`fetched item id=${id}`)),
+      catchError(this.handleError<Item>(`getItem id=${id}`))
     );
   }
 

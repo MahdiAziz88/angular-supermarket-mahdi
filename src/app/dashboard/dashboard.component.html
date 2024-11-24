@@ -1,6 +1,7 @@
 <div class="main-container">
   <!-- Category Tabs -->
   <app-category-tabs [categories]="categories"></app-category-tabs>
+
   <!-- Search Section -->
   <app-item-search
     (filterCriteria)="applyFilter($event)"
@@ -18,8 +19,8 @@
 
   <!-- Display Items -->
   <app-item-list
-    [items]="displayedItems"
-    (editItem)="navigateToEditForm($event)"
-    (deleteItem)="deleteItem($event)"
-  ></app-item-list>
+  [items]="displayedItems"
+  (editItem)="onEditItem($event)"
+  (deleteItem)="onDeleteItem($event)"
+></app-item-list>
 </div>
