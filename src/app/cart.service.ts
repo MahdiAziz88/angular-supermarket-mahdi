@@ -21,7 +21,7 @@ export class CartService {
   }
 
   private loadInitialCartItems(): void {
-    this.getCartItemsFromServer().subscribe((cartItems) => {
+    this.fetchCartItems().subscribe((cartItems) => {
       this.cartItemsSubject.next(cartItems);
       this.cartCountSubject.next(cartItems.length);
     });
@@ -35,10 +35,14 @@ export class CartService {
     return this.cartCountSubject.asObservable();
   }
 
-  private getCartItemsFromServer(): Observable<Cart[]> {
+  fetchCartItems(): Observable<Cart[]> {
     return this.http.get<Cart[]>(this.cartUrl).pipe(
-      tap(() => console.log('Fetched cart items')),
-      catchError(this.handleError<Cart[]>('getCartItems', []))
+      tap((cartItems) => {
+        this.cartItemsSubject.next(cartItems);
+        this.cartCountSubject.next(cartItems.length);
+        console.log('Fetched cart items');
+      }),
+      catchError(this.handleError<Cart[]>('fetchCartItems', []))
     );
   }
 
@@ -75,10 +79,7 @@ export class CartService {
   }
 
   private updateCartState(): void {
-    this.getCartItemsFromServer().subscribe((cartItems) => {
-      this.cartItemsSubject.next(cartItems);
-      this.cartCountSubject.next(cartItems.length);
-    });
+    this.fetchCartItems().subscribe();
   }
 
   private handleError<T>(operation = 'operation', result?: T) {

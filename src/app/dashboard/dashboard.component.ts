@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { ItemService } from '../item.service';
 import { Category, Item } from '../interfaces';
-import { Router } from '@angular/router';
+import { Router, ActivatedRoute } from '@angular/router';
 import { CartService } from '../cart.service';
 
 @Component({
@@ -17,17 +17,26 @@ export class DashboardComponent implements OnInit {
   priceSearch: number | null = null;
   categories: Category[] = [];
   cartCount: number = 0;
+  activeCategory: string = '';
 
   constructor(
     private itemService: ItemService,
     private router: Router,
+    private route: ActivatedRoute,
     private cartService: CartService
   ) {}
 
   ngOnInit(): void {
     this.getItems();
     this.getCategories();
-    this.getCartCount();
+    this.cartService.getCartCount().subscribe((count) => {
+      this.cartCount = count;
+    });
+
+    this.route.queryParams.subscribe(params => {
+      this.activeCategory = params['category'] || '';
+      this.filterItems();
+    });
   }
 
   // Fetch items from the ItemService
@@ -44,13 +53,7 @@ export class DashboardComponent implements OnInit {
     });
   }
 
-  getCartCount(): void {
-    this.cartService.getCartItems().subscribe((cartItems) => {
-      this.cartCount = cartItems.length;
-    });
-  }
-
-  // Filter items based on search criteria
+  // Filter items based on search criteria and active category
   filterItems(): void {
     this.filteredItems = this.items.filter((item) => {
       const matchesName =
@@ -58,7 +61,9 @@ export class DashboardComponent implements OnInit {
         item.name.toLowerCase().includes(this.nameSearch.toLowerCase());
       const matchesPrice =
         this.priceSearch === null || item.price <= this.priceSearch;
-      return matchesName && matchesPrice;
+      const matchesCategory =
+        this.activeCategory === '' || item.category === this.activeCategory;
+      return matchesName && matchesPrice && matchesCategory;
     });
     this.displayedItems = this.filteredItems;
   }
@@ -97,11 +102,7 @@ export class DashboardComponent implements OnInit {
   onDeleteItem(itemId: number): void {
     this.itemService.deleteItem(itemId).subscribe(() => {
       this.getItems(); // Refresh the items after deletion
-      this.cartService.deleteCartItem(itemId).subscribe(() => {
-        this.cartService.getCartItems().subscribe((cartItems) => {
-          this.cartCount = cartItems.length;
-        });
-      });
+      this.cartService.deleteCartItem(itemId).subscribe();
     });
   }
 

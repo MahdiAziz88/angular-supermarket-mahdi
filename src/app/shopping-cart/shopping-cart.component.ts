@@ -55,10 +55,9 @@ export class ShoppingCartComponent implements OnInit {
 
   removeItemFromCart(cartItemId: number): void {
     this.cartService.deleteCartItem(cartItemId).subscribe(() => {
-      this.cartService.getCartItems().subscribe((cartItems) => {
-        this.cartItems = cartItems;
-        this.fetchItemDetails();
-      });
+      this.cartItems = this.cartItems.filter(item => item.id !== cartItemId);
+      delete this.itemDetails[cartItemId];
+      this.calculateTotal();
     });
   }
 }
