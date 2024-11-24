@@ -97,6 +97,11 @@ export class DashboardComponent implements OnInit {
   onDeleteItem(itemId: number): void {
     this.itemService.deleteItem(itemId).subscribe(() => {
       this.getItems(); // Refresh the items after deletion
+      this.cartService.deleteCartItem(itemId).subscribe(() => {
+        this.cartService.getCartItems().subscribe((cartItems) => {
+          this.cartCount = cartItems.length;
+        });
+      });
     });
   }
 
