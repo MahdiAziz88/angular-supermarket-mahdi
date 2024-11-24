@@ -36,6 +36,7 @@ export class ItemComponent implements OnInit {
       );
     });
   }
+  
 
   toggleCartItemChecked(event: Event): void {
     const isChecked = (event.target as HTMLInputElement).checked;
