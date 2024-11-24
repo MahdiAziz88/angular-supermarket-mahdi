@@ -24,15 +24,10 @@ export class ItemService {
       catchError(this.handleError<Item[]>('getItems', []))
     );
   }
-
-  // Fetch items by category
-  getItemsByCategory(categoryName: string): Observable<Item[]> {
-    const url = `${this.itemsUrl}/?category=${encodeURIComponent(categoryName)}`;
-    return this.http.get<Item[]>(url).pipe(
-      tap(() => console.log(`Fetched items for category: ${categoryName}`)),
-      catchError(this.handleError<Item[]>('getItemsByCategory', []))
-    );
-  }
+  
+  getItem(itemId: number): Observable<Item> {
+    return this.http.get<Item>(`api/items/${itemId}`);
+  }  
 
   // Fetch categories
   getCategories(): Observable<Category[]> {

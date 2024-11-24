@@ -1,22 +1,28 @@
 <h2>Your Shopping Cart</h2>
-<div *ngFor="let cartItem of cartItems" class="cart-item">
-  <div class="cart-item-info">
-    <h3>{{ cartItem.item.name }}</h3>
-  </div>
-  <div class="cart-price">
-    BD {{ (cartItem.item.price * cartItem.quantity).toFixed(3) }}
-  </div>
-  <div class="cart-actions">
-    <input
-      type="number"
-      [(ngModel)]="cartItem.quantity"
-      (change)="updateQuantity(cartItem.item.id, cartItem.quantity)"
-      min="1"
-      class="quantity-input"
-    />
-    <button (click)="removeItemFromCart(cartItem.item.id)" class="remove-button">
-      <i class="fas fa-trash"></i>
-    </button>
+<div class="item-container">
+  <div *ngFor="let cartItem of cartItems" class="cart-item">
+    <ng-container *ngIf="(getItemById(cartItem.itemId) | async) as item">
+      <div class="item-details">
+        <h3>{{ item.name }}</h3>
+        <p>Price: BD {{ item.price.toFixed(2) }}</p>
+        
+        <!-- Quantity Input -->
+        <div class="cart-actions">
+          <input
+            type="number"
+            [value]="cartItem.quantity"
+            #quantityInput
+            (change)="updateQuantity(cartItem, quantityInput.value)"
+            min="1"
+            class="quantity-input"
+          />
+          <!-- Remove Button -->
+          <button (click)="removeItemFromCart(cartItem.id)" class="remove-button">
+            <i class="fas fa-trash-alt"></i>
+          </button>
+        </div>
+      </div>
+    </ng-container>
   </div>
 </div>
 <hr class="divider" />
