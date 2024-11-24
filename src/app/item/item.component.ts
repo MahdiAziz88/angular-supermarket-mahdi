@@ -27,7 +27,6 @@ export class ItemComponent implements OnInit {
    * 
    * The `some` method is used to iterate over the cart items and check if any of them
    * match the current item's ID.
-   * The some() method in JavaScript is an array method that checks whether at least one element in an array satisfies a given condition. If any element passes the condition, some() returns true; otherwise, it returns false.
    */
   checkIfItemInCart(): void {
     this.cartService.getCartItems().subscribe((cartItems) => {
@@ -36,7 +35,6 @@ export class ItemComponent implements OnInit {
       );
     });
   }
-  
 
   toggleCartItemChecked(event: Event): void {
     const isChecked = (event.target as HTMLInputElement).checked;

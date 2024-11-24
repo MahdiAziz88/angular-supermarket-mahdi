@@ -3,7 +3,6 @@ import { CartService } from '../cart.service';
 import { ItemService } from '../item.service';
 import { Cart, Item } from '../interfaces';
 
-
 @Component({
   selector: 'app-shopping-cart',
   templateUrl: './shopping-cart.component.html',
@@ -17,10 +16,6 @@ export class ShoppingCartComponent implements OnInit {
   constructor(private cartService: CartService, private itemService: ItemService) {}
 
   ngOnInit(): void {
-    this.refreshCart();
-  }
-
-  refreshCart(): void {
     this.cartService.getCartItems().subscribe((cartItems) => {
       this.cartItems = cartItems;
       this.fetchItemDetails();
@@ -28,8 +23,8 @@ export class ShoppingCartComponent implements OnInit {
   }
 
   fetchItemDetails(): void {
-    this.cartItems.forEach(cartItem => {
-      this.itemService.getItem(cartItem.itemId).subscribe(item => {
+    this.cartItems.forEach((cartItem) => {
+      this.itemService.getItem(cartItem.itemId).subscribe((item) => {
         this.itemDetails[cartItem.itemId] = item;
         this.calculateTotal(); // Calculate total after fetching item details
       });
@@ -60,7 +55,10 @@ export class ShoppingCartComponent implements OnInit {
 
   removeItemFromCart(cartItemId: number): void {
     this.cartService.deleteCartItem(cartItemId).subscribe(() => {
-      this.refreshCart();
+      this.cartService.getCartItems().subscribe((cartItems) => {
+        this.cartItems = cartItems;
+        this.fetchItemDetails();
+      });
     });
   }
 }
