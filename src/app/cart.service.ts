@@ -38,6 +38,7 @@ export class CartService {
    getCartItems(): Observable<Cart[]> {
     return this.http.get<Cart[]>(this.cartUrl).pipe(
       tap((cartItems) => {
+        console.log('Fetched cart items:', cartItems);
         this.updateCartCount(cartItems); // Update cart count whenever items are fetched
       }),
       catchError(this.handleError<Cart[]>('getCartItems', []))
