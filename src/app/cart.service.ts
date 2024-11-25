@@ -67,8 +67,6 @@ export class CartService {
   }
   
   
-  
-
   /** Remove an item from the cart */
   removeItemFromCart(cartId: number): Observable<void> {
     const url = `${this.cartUrl}/${cartId}`;

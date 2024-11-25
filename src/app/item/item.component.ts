@@ -1,5 +1,6 @@
 import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 import { CartService } from '../cart.service';
+import { ItemService } from '../item.service';
 import { Item } from '../interfaces';
 
 @Component({
@@ -14,7 +15,7 @@ export class ItemComponent implements OnInit {
 
   isInCart = false; // Tracks whether the item is in the cart
 
-  constructor(private cartService: CartService) {}
+  constructor(private cartService: CartService, private itemService: ItemService) {}
 
   ngOnInit(): void {
     this.checkIfInCart();
@@ -63,6 +64,7 @@ export class ItemComponent implements OnInit {
   }
 
   onDelete(): void {
-    this.delete.emit(this.item.id);
+    this.itemService.deleteItem(this.item.id).subscribe(() => {}); // Delete the item
+    this.removeItemFromCart(); // Remove the item from the cart if it's deleted
   }
 }
