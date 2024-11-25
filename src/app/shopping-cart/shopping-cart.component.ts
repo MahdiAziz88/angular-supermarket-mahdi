@@ -47,11 +47,15 @@ export class ShoppingCartComponent implements OnInit {
     });
   }
 
-  updateQuantity(cartId: number, quantity: number): void {
-    this.cartService.updateItemQuantity(cartId, quantity).subscribe(() => {
-      this.loadCartData(); // Reload cart data to update UI
+  updateQuantity(cartId: number, itemId: number, quantity: number): void {
+    console.log('Cart ID to update:', cartId);
+    console.log('Quantity to update:', quantity);
+    this.cartService.updateItemQuantity(cartId, itemId, quantity).subscribe({
+      next: (updatedCart) => console.log('Updated cart:', updatedCart),
+      error: (err) => console.error('Error updating cart:', err),
     });
   }
+  
 
   removeItem(cartId: number): void {
     this.cartService.removeItemFromCart(cartId).subscribe(() => {

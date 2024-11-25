@@ -19,7 +19,7 @@
         <input
   type="number"
   [(ngModel)]="detail.cart.quantity"
-  (ngModelChange)="updateQuantity(detail.cart.id, detail.cart.quantity)"
+  (ngModelChange)="updateQuantity(detail.cart.id, detail.cart.itemId, detail.cart.quantity)"
   min="1"
   class="quantity-input"
 />

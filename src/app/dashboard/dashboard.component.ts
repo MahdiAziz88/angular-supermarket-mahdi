@@ -29,10 +29,10 @@ export class DashboardComponent implements OnInit {
   ngOnInit(): void {
     this.getItems();
     this.getCategories();
-    this.cartService.getCartItems().subscribe((cartItems) => {
-      this.cartCount = this.cartService.getTotalItems(cartItems);
+    // Subscribe to cart count updates
+    this.cartService.cartCount$.subscribe((count) => {
+      this.cartCount = count; // Update the cart count in real-time
     });
-
     this.route.queryParams.subscribe(params => {
       this.activeCategory = params['category'] || '';
       this.filterItems();

@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { Observable, of } from 'rxjs';
+import { BehaviorSubject, Observable, of } from 'rxjs';
 import { catchError, tap } from 'rxjs/operators';
 import { Cart, Item } from './interfaces';
 
@@ -13,12 +13,34 @@ export class CartService {
     headers: new HttpHeaders({ 'Content-Type': 'application/json' }),
   };
 
-  constructor(private http: HttpClient) {}
+  private cartCountSubject = new BehaviorSubject<number>(0); // Cart count as a BehaviorSubject
+  cartCount$ = this.cartCountSubject.asObservable(); // Expose as an observable
 
-  /** Get all cart items */
-  getCartItems(): Observable<Cart[]> {
+
+  constructor(private http: HttpClient) {
+    this.refreshCartCount();
+  }
+
+  /** Refresh cart count */
+  private refreshCartCount(): void {
+    this.getCartItems().subscribe((cartItems) => {
+      this.updateCartCount(cartItems);
+    });
+  }
+
+  /** Update cart count */
+  private updateCartCount(cartItems: Cart[]): void {
+    const totalItems = this.getTotalItems(cartItems);
+    this.cartCountSubject.next(totalItems); // Emit the updated count
+  }
+
+   /** Get all cart items */
+   getCartItems(): Observable<Cart[]> {
     return this.http.get<Cart[]>(this.cartUrl).pipe(
-      tap((cartItems) => console.log('Fetched cart items:', cartItems)),
+      tap((cartItems) => {
+        console.log('Fetched cart items:', cartItems);
+        this.updateCartCount(cartItems); // Update cart count whenever items are fetched
+      }),
       catchError(this.handleError<Cart[]>('getCartItems', []))
     );
   }
@@ -28,25 +50,38 @@ export class CartService {
     const newCartItem = { itemId: item.id, quantity: 1 }; // Do not include `id`, let the API handle it
     console.log('Adding new cart item without ID:', newCartItem);
     return this.http.post<Cart>(this.cartUrl, newCartItem, this.httpOptions).pipe(
-      tap((cartItem) => console.log(`Added cart item with generated id=${cartItem.id}`)),
+      tap((cartItem) => {
+        console.log(`Added cart item with generated id=${cartItem.id}`);
+        this.refreshCartCount(); // Refresh cart count after adding
+      }),
       catchError(this.handleError<Cart>('addItemToCart'))
     );
   }
 
   /** Update quantity of an item in the cart */
-  updateItemQuantity(cartId: number, quantity: number): Observable<Cart> {
+  updateItemQuantity(cartId: number, itemId: number, quantity: number): Observable<Cart> {
     const url = `${this.cartUrl}/${cartId}`;
-    return this.http.put<Cart>(url, { quantity }, this.httpOptions).pipe(
-      tap(() => console.log(`Updated cart item id=${cartId} with quantity=${quantity}`)),
+    const payload = { id: cartId, itemId: itemId, quantity: quantity }; // Payload keeps id and itemId unchanged, updates quantity
+    console.log('Sending update request to:', url);
+    console.log('Payload:', payload);
+  
+    return this.http.put<Cart>(url, payload, this.httpOptions).pipe(
+      tap((updatedCart) => console.log('Updated cart item:', updatedCart)),
       catchError(this.handleError<Cart>('updateItemQuantity'))
     );
   }
+  
+  
+  
 
   /** Remove an item from the cart */
   removeItemFromCart(cartId: number): Observable<void> {
     const url = `${this.cartUrl}/${cartId}`;
     return this.http.delete<void>(url, this.httpOptions).pipe(
-      tap(() => console.log(`Removed cart item with id=${cartId}`)),
+      tap(() => {
+        console.log(`Removed cart item with id=${cartId}`);
+        this.refreshCartCount(); // Refresh cart count after removing
+      }),
       catchError(this.handleError<void>('removeItemFromCart'))
     );
   }
@@ -54,7 +89,10 @@ export class CartService {
   /** Clear all items from the cart */
   clearCart(): Observable<void> {
     return this.http.delete<void>(this.cartUrl, this.httpOptions).pipe(
-      tap(() => console.log('Cleared cart')),
+      tap(() => {
+        console.log('Cleared cart');
+        this.cartCountSubject.next(0); // Reset cart count directly
+      }),
       catchError(this.handleError<void>('clearCart'))
     );
   }
