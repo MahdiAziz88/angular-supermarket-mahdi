@@ -63,7 +63,8 @@ export class ItemComponent implements OnInit {
     this.edit.emit(this.item);
   }
 
-  onDelete(): void {
+  onDelete(): void {4
+    this.delete.emit(this.item.id); // Emit the ID of the item to be deleted
     this.itemService.deleteItem(this.item.id).subscribe(() => {}); // Delete the item
     this.removeItemFromCart(); // Remove the item from the cart if it's deleted
   }
