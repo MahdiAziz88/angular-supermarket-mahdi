@@ -29,8 +29,8 @@ export class DashboardComponent implements OnInit {
   ngOnInit(): void {
     this.getItems();
     this.getCategories();
-    this.cartService.getCartCount().subscribe((count) => {
-      this.cartCount = count;
+    this.cartService.getCartItems().subscribe((cartItems) => {
+      this.cartCount = this.cartService.getTotalItems(cartItems);
     });
 
     this.route.queryParams.subscribe(params => {
@@ -102,7 +102,7 @@ export class DashboardComponent implements OnInit {
   onDeleteItem(itemId: number): void {
     this.itemService.deleteItem(itemId).subscribe(() => {
       this.getItems(); // Refresh the items after deletion
-      this.cartService.deleteCartItem(itemId).subscribe();
+      this.cartService.removeItemFromCart(itemId).subscribe();
     });
   }
 

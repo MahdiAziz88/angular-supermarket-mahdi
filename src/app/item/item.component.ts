@@ -1,6 +1,6 @@
 import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 import { CartService } from '../cart.service';
-import { Cart, Item } from '../interfaces';
+import { Item } from '../interfaces';
 
 @Component({
   selector: 'app-item',
@@ -11,83 +11,68 @@ export class ItemComponent implements OnInit {
   @Input() item!: Item; // Receives the item to display
   @Output() edit = new EventEmitter<Item>(); // Emits the item to be edited
   @Output() delete = new EventEmitter<number>(); // Emits the ID of the item to be deleted
-  isInCart: boolean = false;
+
+  isInCart = false; // Tracks whether the item is in the cart
 
   constructor(private cartService: CartService) {}
 
   ngOnInit(): void {
-    this.checkIfItemInCart();
+    this.checkIfInCart();
   }
 
-  /**
-   * Checks if the current item is in the cart.
-   * 
-   * This method subscribes to the cart items observable from the cart service
-   * and sets the `isInCart` property to `true` if the current item is found in the cart.
-   * 
-   * The `some` method is used to iterate over the cart items and check if any of them
-   * match the current item's ID.
-   */
-  checkIfItemInCart(): void {
+  checkIfInCart(): void {
+    console.log(`Checking if item ${this.item.id} is in the cart.`);
     this.cartService.getCartItems().subscribe((cartItems) => {
-      this.isInCart = cartItems.some(
-        (cartItem) => cartItem.itemId === this.item.id
-      );
+      console.log('Cart items:', cartItems);
+      this.isInCart = cartItems.some((cartItem) => cartItem.itemId === this.item.id);
+      console.log(`Item ${this.item.id} is ${this.isInCart ? 'in' : 'not in'} the cart.`);
     });
   }
 
   toggleCartItemChecked(event: Event): void {
     const isChecked = (event.target as HTMLInputElement).checked;
+    console.log(`Toggle item ${this.item.id} to ${isChecked ? 'add' : 'remove'} in cart.`);
     if (isChecked) {
-      this.addToCart();
+      this.addItemToCart();
     } else {
-      this.removeFromCart();
+      this.removeItemFromCart();
     }
   }
 
-  addToCart(): void {
-    if (!this.isInCart) {
-      const newCartItem: Cart = {
-        id: 0, // Assuming 0 or undefined; actual ID will be assigned by the backend
-        itemId: this.item.id,
-        quantity: 1,
-      };
-      this.cartService.addCartItem(newCartItem).subscribe(
-        () => {
-          this.isInCart = true;
-        },
-        (error: any) => {
-          console.error('Error adding item to cart:', error);
-        }
-      );
-    }
+  addItemToCart(): void {
+    console.log(`Adding item ${this.item.id} to the cart.`);
+    this.cartService.addItemToCart(this.item).subscribe(() => {
+      console.log(`Item ${this.item.id} successfully added to the cart.`);
+      this.isInCart = true;
+    }, (error) => {
+      console.error(`Failed to add item ${this.item.id} to the cart:`, error);
+    });
   }
 
-  removeFromCart(): void {
+  removeItemFromCart(): void {
+    console.log(`Removing item ${this.item.id} from the cart.`);
     this.cartService.getCartItems().subscribe((cartItems) => {
-      const cartItem = cartItems.find(
-        (item) => item.itemId === this.item.id
-      );
+      const cartItem = cartItems.find((cartItem) => cartItem.itemId === this.item.id);
       if (cartItem) {
-        this.cartService.deleteCartItem(cartItem.id).subscribe(
-          () => {
-            this.isInCart = false;
-          },
-          (error: any) => {
-            console.error('Error removing item from cart:', error);
-          }
-        );
+        this.cartService.removeItemFromCart(cartItem.id).subscribe(() => {
+          console.log(`Item ${this.item.id} successfully removed from the cart.`);
+          this.isInCart = false;
+        }, (error) => {
+          console.error(`Failed to remove item ${this.item.id} from the cart:`, error);
+        });
+      } else {
+        console.warn(`Item ${this.item.id} not found in the cart for removal.`);
       }
     });
   }
 
   onEdit(): void {
-    this.edit.emit(this.item); // Emits the item object (makes it visible to the parent component)
+    console.log(`Editing item ${this.item.id}.`);
+    this.edit.emit(this.item);
   }
 
   onDelete(): void {
-    if (this.item.id !== undefined) {
-      this.delete.emit(this.item.id); // Emits the item's ID
-    }
+    console.log(`Deleting item ${this.item.id}.`);
+    this.delete.emit(this.item.id);
   }
 }
