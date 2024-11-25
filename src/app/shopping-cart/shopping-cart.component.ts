@@ -48,10 +48,8 @@ export class ShoppingCartComponent implements OnInit {
   }
 
   updateQuantity(cartId: number, itemId: number, quantity: number): void {
-    console.log('Cart ID to update:', cartId);
-    console.log('Quantity to update:', quantity);
     this.cartService.updateItemQuantity(cartId, itemId, quantity).subscribe({
-      next: (updatedCart) => console.log('Updated cart:', updatedCart),
+      next: (updatedCart) => (updatedCart),
       error: (err) => console.error('Error updating cart:', err),
     });
   }
@@ -63,17 +61,7 @@ export class ShoppingCartComponent implements OnInit {
     });
   }
 
-  clearCart(): void {
-    this.cartService.clearCart().subscribe(() => {
-      this.loadCartData(); // Reload cart data to update UI
-    });
-  }
-
   getTotalPrice(): number {
     return this.cartService.getTotalPrice(this.cartItems, this.items);
-  }
-
-  getTotalItems(): number {
-    return this.cartService.getTotalItems(this.cartItems);
   }
 }

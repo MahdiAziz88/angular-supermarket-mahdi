@@ -21,17 +21,13 @@ export class ItemComponent implements OnInit {
   }
 
   checkIfInCart(): void {
-    console.log(`Checking if item ${this.item.id} is in the cart.`);
     this.cartService.getCartItems().subscribe((cartItems) => {
-      console.log('Cart items:', cartItems);
       this.isInCart = cartItems.some((cartItem) => cartItem.itemId === this.item.id);
-      console.log(`Item ${this.item.id} is ${this.isInCart ? 'in' : 'not in'} the cart.`);
     });
   }
 
   toggleCartItemChecked(event: Event): void {
     const isChecked = (event.target as HTMLInputElement).checked;
-    console.log(`Toggle item ${this.item.id} to ${isChecked ? 'add' : 'remove'} in cart.`);
     if (isChecked) {
       this.addItemToCart();
     } else {
@@ -40,9 +36,7 @@ export class ItemComponent implements OnInit {
   }
 
   addItemToCart(): void {
-    console.log(`Adding item ${this.item.id} to the cart.`);
     this.cartService.addItemToCart(this.item).subscribe(() => {
-      console.log(`Item ${this.item.id} successfully added to the cart.`);
       this.isInCart = true;
     }, (error) => {
       console.error(`Failed to add item ${this.item.id} to the cart:`, error);
@@ -50,12 +44,10 @@ export class ItemComponent implements OnInit {
   }
 
   removeItemFromCart(): void {
-    console.log(`Removing item ${this.item.id} from the cart.`);
     this.cartService.getCartItems().subscribe((cartItems) => {
       const cartItem = cartItems.find((cartItem) => cartItem.itemId === this.item.id);
       if (cartItem) {
         this.cartService.removeItemFromCart(cartItem.id).subscribe(() => {
-          console.log(`Item ${this.item.id} successfully removed from the cart.`);
           this.isInCart = false;
         }, (error) => {
           console.error(`Failed to remove item ${this.item.id} from the cart:`, error);
@@ -67,12 +59,10 @@ export class ItemComponent implements OnInit {
   }
 
   onEdit(): void {
-    console.log(`Editing item ${this.item.id}.`);
     this.edit.emit(this.item);
   }
 
   onDelete(): void {
-    console.log(`Deleting item ${this.item.id}.`);
     this.delete.emit(this.item.id);
   }
 }

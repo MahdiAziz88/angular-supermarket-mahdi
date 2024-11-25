@@ -6,7 +6,6 @@
       <!-- Item Details -->
       <div class="cart-item-info">
         <h3>{{ detail.item.name }}</h3>
-        <p>{{ detail.item.category }}</p>
       </div>
 
       <!-- Item Price -->
@@ -35,8 +34,6 @@
 
   <div class="total">
     <strong>Total: BD {{ getTotalPrice().toFixed(3) }}</strong>
-    <strong>Total Items: {{ getTotalItems() }}</strong>
-    <button (click)="clearCart()" class="clear-cart-button">Clear Cart</button>
   </div>
 </div>
 

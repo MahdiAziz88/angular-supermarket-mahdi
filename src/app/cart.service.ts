@@ -38,7 +38,6 @@ export class CartService {
    getCartItems(): Observable<Cart[]> {
     return this.http.get<Cart[]>(this.cartUrl).pipe(
       tap((cartItems) => {
-        console.log('Fetched cart items:', cartItems);
         this.updateCartCount(cartItems); // Update cart count whenever items are fetched
       }),
       catchError(this.handleError<Cart[]>('getCartItems', []))
@@ -48,10 +47,8 @@ export class CartService {
   /** Add an item to the cart */
   addItemToCart(item: Item): Observable<Cart> {
     const newCartItem = { itemId: item.id, quantity: 1 }; // Do not include `id`, let the API handle it
-    console.log('Adding new cart item without ID:', newCartItem);
     return this.http.post<Cart>(this.cartUrl, newCartItem, this.httpOptions).pipe(
       tap((cartItem) => {
-        console.log(`Added cart item with generated id=${cartItem.id}`);
         this.refreshCartCount(); // Refresh cart count after adding
       }),
       catchError(this.handleError<Cart>('addItemToCart'))
@@ -61,12 +58,9 @@ export class CartService {
   /** Update quantity of an item in the cart */
   updateItemQuantity(cartId: number, itemId: number, quantity: number): Observable<Cart> {
     const url = `${this.cartUrl}/${cartId}`;
-    const payload = { id: cartId, itemId: itemId, quantity: quantity }; // Payload keeps id and itemId unchanged, updates quantity
-    console.log('Sending update request to:', url);
-    console.log('Payload:', payload);
+    const updatedCartItem = { id: cartId, itemId: itemId, quantity: quantity }; // Payload keeps id and itemId unchanged, updates quantity
   
-    return this.http.put<Cart>(url, payload, this.httpOptions).pipe(
-      tap((updatedCart) => console.log('Updated cart item:', updatedCart)),
+    return this.http.put<Cart>(url, updatedCartItem, this.httpOptions).pipe(
       catchError(this.handleError<Cart>('updateItemQuantity'))
     );
   }
@@ -86,16 +80,6 @@ export class CartService {
     );
   }
 
-  /** Clear all items from the cart */
-  clearCart(): Observable<void> {
-    return this.http.delete<void>(this.cartUrl, this.httpOptions).pipe(
-      tap(() => {
-        console.log('Cleared cart');
-        this.cartCountSubject.next(0); // Reset cart count directly
-      }),
-      catchError(this.handleError<void>('clearCart'))
-    );
-  }
 
   /** Calculate the total number of items in the cart */
   getTotalItems(cartItems: Cart[]): number {
