@@ -18,6 +18,7 @@ export class DashboardComponent implements OnInit {
   categories: Category[] = [];
   cartCount: number = 0;
   activeCategory: string = '';
+  cartItemsMap: { [key: number]: boolean } = {}; // Map of item IDs to cart status
 
   constructor(
     private itemService: ItemService,
@@ -29,6 +30,7 @@ export class DashboardComponent implements OnInit {
   ngOnInit(): void {
     this.getItems();
     this.getCategories();
+    this.loadCartItems(); // Load cart items once
     // Subscribe to cart count updates
     this.cartService.cartCount$.subscribe((count) => {
       this.cartCount = count; // Update the cart count in real-time
@@ -39,13 +41,34 @@ export class DashboardComponent implements OnInit {
     });
   }
 
+  loadCartItems(): void {
+    this.cartService.getCartItems().subscribe((cartItems) => {
+      this.cartItemsMap = cartItems.reduce((map: { [key: number]: boolean }, cartItem) => {
+        map[cartItem.itemId] = true;
+        return map;
+      }, {});
+    });
+  }
+  
+
   // Fetch items from the ItemService
   getItems(): void {
     this.itemService.getItems().subscribe((items) => {
-      this.items = items;
-      this.filterItems();
+      // Load cart items to update the `isInCart` state for each item
+      this.cartService.getCartItems().subscribe((cartItems) => {
+        const cartItemIds = cartItems.map((cartItem) => cartItem.itemId);
+  
+        // Add `isInCart` property to each item
+        this.items = items.map((item) => ({
+          ...item,
+          isInCart: cartItemIds.includes(item.id), // Set initial cart state
+        }));
+  
+        this.filterItems(); // Apply any filters
+      });
     });
   }
+  
 
   getCategories(): void {
     this.itemService.getCategories().subscribe((categories) => {
@@ -101,10 +124,19 @@ export class DashboardComponent implements OnInit {
   // Handle delete item event
   onDeleteItem(itemId: number): void {
     this.itemService.deleteItem(itemId).subscribe(() => {
-      this.getItems(); // Refresh the items after deletion
-      this.cartService.removeItemFromCart(itemId).subscribe();
+      // Remove the item from the items array
+      this.items = this.items.filter((item) => item.id !== itemId);
+  
+      // Optionally update cart state
+      this.cartService.removeItemFromCart(itemId).subscribe(() => {
+        // Update cart state if needed
+      });
+  
+      this.filterItems(); // Reapply filters
     });
   }
+  
+  
 
   goToCart(): void {
     this.router.navigate(['/cart']);

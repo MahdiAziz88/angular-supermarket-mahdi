@@ -1,4 +1,5 @@
 export interface Item {
+  isInCart?: boolean;
   id: number;
   name: string;
   price: number;

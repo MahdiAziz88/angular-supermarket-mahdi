@@ -11,29 +11,30 @@ export class ItemComponent implements OnInit {
   @Input() item!: Item; // Receives the item to display
   @Output() edit = new EventEmitter<Item>(); // Emits the item to be edited
   @Output() delete = new EventEmitter<number>(); // Emits the ID of the item to be deleted
-
-  isInCart = false; // Tracks whether the item is in the cart
+  @Input() isInCart: boolean = false; // Receive cart status from the parent
 
   constructor(private cartService: CartService) {}
 
   ngOnInit(): void {
-    this.checkIfInCart();
+    // this.checkIfInCart();
   }
 
-  checkIfInCart(): void {
-    this.cartService.getCartItems().subscribe((cartItems) => {
-      this.isInCart = cartItems.some((cartItem) => cartItem.itemId === this.item.id);
-    });
-  }
+  // checkIfInCart(): void {
+  //   this.cartService.getCartItems().subscribe((cartItems) => {
+  //     this.isInCart = cartItems.some((cartItem) => cartItem.itemId === this.item.id);
+  //   });
+  // }
 
-  toggleCartItemChecked(event: Event): void {
-    const isChecked = (event.target as HTMLInputElement).checked;
-    if (isChecked) {
-      this.addItemToCart();
-    } else {
-      this.removeItemFromCart();
-    }
+toggleCartItemChecked(): void {
+  this.item.isInCart = !this.item.isInCart; // Toggle the state
+
+  if (this.item.isInCart) {
+    this.cartService.addItemToCart(this.item).subscribe();
+  } else {
+    this.cartService.removeItemFromCart(this.item.id).subscribe();
   }
+}
+
 
   addItemToCart(): void {
     this.cartService.addItemToCart(this.item).subscribe(() => {

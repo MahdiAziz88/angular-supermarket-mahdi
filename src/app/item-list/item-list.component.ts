@@ -10,6 +10,8 @@ export class ItemListComponent {
   @Input() items: Item[] = []; // Accepts data from the parent
   @Output() editItem = new EventEmitter<Item>();
   @Output() deleteItem = new EventEmitter<number>();
+  @Input() cartItemsMap: { [key: number]: boolean } = {};
+
 
   onEditItem(item: Item) {
     this.editItem.emit(item);

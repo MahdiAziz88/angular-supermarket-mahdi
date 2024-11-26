@@ -1,11 +1,11 @@
 <div class="card">
   <!-- Checkbox to toggle cart item -->
   <input
-    type="checkbox"
-    (change)="toggleCartItemChecked($event)"
-    [checked]="isInCart"
-    class="cart-checkbox"
-  />
+  type="checkbox"
+  [checked]="item.isInCart"
+  (change)="toggleCartItemChecked()"
+/>
+
 
   <!-- Item Information -->
   <div class="item-info">
