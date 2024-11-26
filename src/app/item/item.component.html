@@ -1,13 +1,14 @@
 <div class="card">
   <!-- Checkbox to toggle cart item -->
   <input
-    type="checkbox"
-    (change)="toggleCartItemChecked($event)"
-    [checked]="isInCart"
-    class="cart-checkbox"
-  />
+  type="checkbox"
+  (change)="toggleCart($event)"
+  [checked]="isInCart"
+  class="cart-checkbox"
+/>
 
-  <!-- Item Information -->
+
+  <!-- Item Details -->
   <div class="item-info">
     <h3>{{ item.name }}</h3>
     <p class="category">{{ item.category }}</p>

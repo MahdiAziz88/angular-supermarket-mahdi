@@ -13,8 +13,8 @@ export class CartService {
     headers: new HttpHeaders({ 'Content-Type': 'application/json' }),
   };
 
-  private cartCountSubject = new BehaviorSubject<number>(0); // Cart count as a BehaviorSubject
-  cartCount$ = this.cartCountSubject.asObservable(); // Expose as an observable
+  // private cartCountSubject = new BehaviorSubject<number>(0); // Cart count as a BehaviorSubject
+  // cartCount$ = this.cartCountSubject.asObservable(); // Expose as an observable
 
 
   constructor(private http: HttpClient) {
@@ -24,22 +24,22 @@ export class CartService {
   /** Refresh cart count */
   private refreshCartCount(): void {
     this.getCartItems().subscribe((cartItems) => {
-      this.updateCartCount(cartItems);
+      // this.updateCartCount(cartItems);
     });
   }
 
-  /** Update cart count */
-  private updateCartCount(cartItems: Cart[]): void {
-    const totalItems = this.getTotalItems(cartItems);
-    this.cartCountSubject.next(totalItems); // Emit the updated count
-  }
+  // /** Update cart count */
+  // private updateCartCount(cartItems: Cart[]): void {
+  //   const totalItems = this.getTotalItems(cartItems);
+  //   this.cartCountSubject.next(totalItems); // Emit the updated count
+  // }
 
    /** Get all cart items */
    getCartItems(): Observable<Cart[]> {
     return this.http.get<Cart[]>(this.cartUrl).pipe(
       tap((cartItems) => {
         console.log('Fetched cart items:', cartItems);
-        this.updateCartCount(cartItems); // Update cart count whenever items are fetched
+        // this.updateCartCount(cartItems); // Update cart count whenever items are fetched
       }),
       catchError(this.handleError<Cart[]>('getCartItems', []))
     );

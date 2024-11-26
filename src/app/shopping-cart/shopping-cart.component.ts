@@ -49,7 +49,7 @@ export class ShoppingCartComponent implements OnInit {
 
   updateQuantity(cartId: number, itemId: number, quantity: number): void {
     this.cartService.updateItemQuantity(cartId, itemId, quantity).subscribe({
-      next: (updatedCart) => console.log('Cart updated successfully:', updatedCart),
+      next: (quantity) => console.log('Cart Item quantity updated successfully:', quantity),
       error: (err) => console.error('Error updating cart:', err),
     });
   }

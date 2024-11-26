@@ -16,11 +16,15 @@
     </div>
     <button (click)="navigateToAddForm()" class="add-button">Add</button>
   </div>
+  
 
   <!-- Display Items -->
   <app-item-list
   [items]="displayedItems"
+  [cartItems]="cartItems"
   (editItem)="onEditItem($event)"
   (deleteItem)="onDeleteItem($event)"
+  (toggleCartItem)="toggleCartItem($event)"
 ></app-item-list>
+
 </div>

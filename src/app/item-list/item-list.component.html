@@ -1,9 +1,11 @@
 <div class="item-container">
-    <app-item
-      *ngFor="let item of items"
-      [item]="item"
-      (edit)="onEditItem($event)"
-      (delete)="onDeleteItem($event)"
-    ></app-item>
-  </div>
-  
+  <app-item
+  *ngFor="let item of items"
+  [item]="item"
+  [isInCart]="itemInCart(item)"
+  (edit)="onEditItem($event)"
+  (delete)="onDeleteItem($event)"
+  (cartToggle)="onToggleCartItem(item, $event)"
+></app-item>
+
+</div>

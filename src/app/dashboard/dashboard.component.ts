@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { ItemService } from '../item.service';
-import { Category, Item } from '../interfaces';
+import { Category, Item, Cart } from '../interfaces';
 import { Router, ActivatedRoute } from '@angular/router';
 import { CartService } from '../cart.service';
 
@@ -13,6 +13,7 @@ export class DashboardComponent implements OnInit {
   items: Item[] = [];
   filteredItems: Item[] = [];
   displayedItems: Item[] = [];
+  cartItems: Cart[] = [];
   nameSearch: string = '';
   priceSearch: number | null = null;
   categories: Category[] = [];
@@ -29,17 +30,16 @@ export class DashboardComponent implements OnInit {
   ngOnInit(): void {
     this.getItems();
     this.getCategories();
-    // Subscribe to cart count updates
-    this.cartService.cartCount$.subscribe((count) => {
-      this.cartCount = count; // Update the cart count in real-time
-    });
-    this.route.queryParams.subscribe(params => {
+    this.getCartItems(); // Fetch cart items
+    // this.cartService.cartCount$.subscribe((count) => {
+    //   this.cartCount = count;
+    // });
+    this.route.queryParams.subscribe((params) => {
       this.activeCategory = params['category'] || '';
       this.filterItems();
     });
   }
 
-  // Fetch items from the ItemService
   getItems(): void {
     this.itemService.getItems().subscribe((items) => {
       this.items = items;
@@ -53,7 +53,35 @@ export class DashboardComponent implements OnInit {
     });
   }
 
-  // Filter items based on search criteria and active category
+  getCartItems(): void {
+    this.cartService.getCartItems().subscribe((cartItems) => {
+      this.cartItems = cartItems; // Save cart items
+      this.cartCount = this.cartItems.length; // Calculate the count from cartItems
+    });
+  }
+
+
+  itemInCart(item: Item): boolean {
+    return this.cartItems.some((cartItem) => cartItem.itemId === item.id);
+  }
+
+  toggleCartItem(event: { item: Item; addToCart: boolean }): void {
+    const { item, addToCart } = event;
+  
+    if (addToCart) {
+      this.cartService.addItemToCart(item).subscribe(() => {
+        this.getCartItems(); // Refresh cart items after adding
+      });
+    } else {
+      const cartItem = this.cartItems.find((cartItem) => cartItem.itemId === item.id);
+      if (cartItem) {
+        this.cartService.removeItemFromCart(cartItem.id).subscribe(() => {
+          this.getCartItems(); // Refresh cart items after removing
+        });
+      }
+    }
+  }
+
   filterItems(): void {
     this.filteredItems = this.items.filter((item) => {
       const matchesName =
@@ -68,43 +96,41 @@ export class DashboardComponent implements OnInit {
     this.displayedItems = this.filteredItems;
   }
 
-  /**
-   * Applies a filter to the items based on the given criteria.
-   *
-   * @param criteria - An object containing the filter criteria.
-   * @param criteria.name - The name to filter by.
-   * @param criteria.price - The price to filter by, or null if no price filter is applied.
-   */
   applyFilter(criteria: { name: string; price: number | null }): void {
     this.nameSearch = criteria.name;
     this.priceSearch = criteria.price;
     this.filterItems();
   }
 
-  // Clear all filters
   clearFilters(): void {
     this.nameSearch = '';
     this.priceSearch = null;
     this.filterItems();
   }
 
-  // Navigate to the add item form
   navigateToAddForm(): void {
     this.router.navigate(['/item/new']);
   }
 
-  // Handle edit item event
   onEditItem(item: Item): void {
     this.router.navigate(['/item/edit', item.id]);
   }
 
-  // Handle delete item event
   onDeleteItem(itemId: number): void {
     this.itemService.deleteItem(itemId).subscribe(() => {
-      this.getItems(); // Refresh the items after deletion
-      this.cartService.removeItemFromCart(itemId); // Remove the item from the cart
+      // Refresh items after deletion
+      this.getItems();
+      
+      // Remove the item from the cart if it exists
+      const cartItem = this.cartItems.find((cartItem) => cartItem.itemId === itemId);
+      if (cartItem) {
+        this.cartService.removeItemFromCart(cartItem.id).subscribe(() => {
+          this.getCartItems(); // Refresh cart items and update cartCount
+        });
+      }
     });
   }
+  
 
   goToCart(): void {
     this.router.navigate(['/cart']);

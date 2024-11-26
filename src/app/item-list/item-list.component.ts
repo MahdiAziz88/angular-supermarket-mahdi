@@ -7,15 +7,25 @@ import { Item } from '../interfaces';
   styleUrls: ['./item-list.component.css'],
 })
 export class ItemListComponent {
-  @Input() items: Item[] = []; // Accepts data from the parent
+  @Input() items: Item[] = [];
+  @Input() cartItems: any[] = [];
   @Output() editItem = new EventEmitter<Item>();
   @Output() deleteItem = new EventEmitter<number>();
+  @Output() toggleCartItem = new EventEmitter<{ item: Item; addToCart: boolean }>();
 
-  onEditItem(item: Item) {
+  itemInCart(item: Item): boolean {
+    return this.cartItems.some((cartItem) => cartItem.itemId === item.id);
+  }
+
+  onEditItem(item: Item): void {
     this.editItem.emit(item);
   }
 
-  onDeleteItem(itemId: number) {
+  onDeleteItem(itemId: number): void {
     this.deleteItem.emit(itemId);
+  }
+
+  onToggleCartItem(item: Item, addToCart: boolean): void {
+    this.toggleCartItem.emit({ item, addToCart });
   }
 }
