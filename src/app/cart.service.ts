@@ -9,6 +9,9 @@ import { Cart, Item } from './interfaces';
 })
 export class CartService {
   private cartUrl = 'api/cart'; // URL for cart API
+  private cartItemsSubject = new BehaviorSubject<Cart[]>([]);
+  cartItems$ = this.cartItemsSubject.asObservable(); // Expose as observable
+
   private httpOptions = {
     headers: new HttpHeaders({ 'Content-Type': 'application/json' }),
   };
@@ -18,13 +21,13 @@ export class CartService {
 
 
   constructor(private http: HttpClient) {
-    this.refreshCartCount();
+    this.refreshCart();
   }
 
   /** Refresh cart count */
-  private refreshCartCount(): void {
+  private refreshCart(): void {
     this.getCartItems().subscribe((cartItems) => {
-      // this.updateCartCount(cartItems);
+      this.cartItemsSubject.next(cartItems);
     });
   }
 
@@ -39,7 +42,6 @@ export class CartService {
     return this.http.get<Cart[]>(this.cartUrl).pipe(
       tap((cartItems) => {
         console.log('Fetched cart items:', cartItems);
-        // this.updateCartCount(cartItems); // Update cart count whenever items are fetched
       }),
       catchError(this.handleError<Cart[]>('getCartItems', []))
     );
@@ -47,11 +49,9 @@ export class CartService {
 
   /** Add an item to the cart */
   addItemToCart(item: Item): Observable<Cart> {
-    const newCartItem = { itemId: item.id, quantity: 1 }; // Do not include `id`, let the API handle it
+    const newCartItem = { itemId: item.id, quantity: 1 };
     return this.http.post<Cart>(this.cartUrl, newCartItem, this.httpOptions).pipe(
-      tap((cartItem) => {
-        this.refreshCartCount(); // Refresh cart count after adding
-      }),
+      tap(() => this.refreshCart()), // Refresh cart state after adding
       catchError(this.handleError<Cart>('addItemToCart'))
     );
   }
@@ -59,9 +59,9 @@ export class CartService {
   /** Update quantity of an item in the cart */
   updateItemQuantity(cartId: number, itemId: number, quantity: number): Observable<Cart> {
     const url = `${this.cartUrl}/${cartId}`;
-    const updatedCartItem = { id: cartId, itemId: itemId, quantity: quantity }; // Payload keeps id and itemId unchanged, updates quantity
-  
+    const updatedCartItem = { id: cartId, itemId: itemId, quantity: quantity };
     return this.http.put<Cart>(url, updatedCartItem, this.httpOptions).pipe(
+      tap(() => this.refreshCart()), // Refresh cart state after updating
       catchError(this.handleError<Cart>('updateItemQuantity'))
     );
   }
@@ -71,10 +71,7 @@ export class CartService {
   removeItemFromCart(cartId: number): Observable<void> {
     const url = `${this.cartUrl}/${cartId}`;
     return this.http.delete<void>(url, this.httpOptions).pipe(
-      tap(() => {
-        console.log(`Removed cart item with id=${cartId}`);
-        this.refreshCartCount(); // Refresh cart count after removing
-      }),
+      tap(() => this.refreshCart()), // Refresh cart state after removing
       catchError(this.handleError<void>('removeItemFromCart'))
     );
   }

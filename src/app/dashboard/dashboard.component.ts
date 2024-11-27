@@ -30,10 +30,10 @@ export class DashboardComponent implements OnInit {
   ngOnInit(): void {
     this.getItems();
     this.getCategories();
-    this.getCartItems(); // Fetch cart items
-    // this.cartService.cartCount$.subscribe((count) => {
-    //   this.cartCount = count;
-    // });
+    this.cartService.cartItems$.subscribe((cartItems) => {
+      this.cartItems = cartItems;
+      this.cartCount = cartItems.reduce((total, item) => total + item.quantity, 0); // Calculate count
+    });
     this.route.queryParams.subscribe((params) => {
       this.activeCategory = params['category'] || '';
       this.filterItems();
@@ -60,24 +60,15 @@ export class DashboardComponent implements OnInit {
     });
   }
 
-
-  itemInCart(item: Item): boolean {
-    return this.cartItems.some((cartItem) => cartItem.itemId === item.id);
-  }
-
   toggleCartItem(event: { item: Item; addToCart: boolean }): void {
     const { item, addToCart } = event;
-  
+
     if (addToCart) {
-      this.cartService.addItemToCart(item).subscribe(() => {
-        this.getCartItems(); // Refresh cart items after adding
-      });
+      this.cartService.addItemToCart(item).subscribe();
     } else {
       const cartItem = this.cartItems.find((cartItem) => cartItem.itemId === item.id);
       if (cartItem) {
-        this.cartService.removeItemFromCart(cartItem.id).subscribe(() => {
-          this.getCartItems(); // Refresh cart items after removing
-        });
+        this.cartService.removeItemFromCart(cartItem.id).subscribe();
       }
     }
   }
