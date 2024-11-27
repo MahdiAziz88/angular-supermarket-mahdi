@@ -16,10 +16,6 @@ export class CartService {
     headers: new HttpHeaders({ 'Content-Type': 'application/json' }),
   };
 
-  // private cartCountSubject = new BehaviorSubject<number>(0); // Cart count as a BehaviorSubject
-  // cartCount$ = this.cartCountSubject.asObservable(); // Expose as an observable
-
-
   constructor(private http: HttpClient) {
     this.refreshCart();
   }
@@ -31,11 +27,6 @@ export class CartService {
     });
   }
 
-  // /** Update cart count */
-  // private updateCartCount(cartItems: Cart[]): void {
-  //   const totalItems = this.getTotalItems(cartItems);
-  //   this.cartCountSubject.next(totalItems); // Emit the updated count
-  // }
 
    /** Get all cart items */
    getCartItems(): Observable<Cart[]> {

@@ -116,7 +116,6 @@ export class DashboardComponent implements OnInit {
       const cartItem = this.cartItems.find((cartItem) => cartItem.itemId === itemId);
       if (cartItem) {
         this.cartService.removeItemFromCart(cartItem.id).subscribe(() => {
-          this.getCartItems(); // Refresh cart items and update cartCount
         });
       }
     });
